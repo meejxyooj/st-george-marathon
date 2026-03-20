@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="St George 26.2">
+<meta name="theme-color" content="#0a0500">
+<title>St. George Marathon 2026</title>
+<link rel="manifest" href="#" id="manifest-placeholder">
+<style>
+:root{
+  --bg:#0a0500;
+  --bg2:#140a02;
+  --bg3:#1e1005;
+  --card:#1a0e03;
+  --border:#3a1e06;
+  --border2:#5a3010;
+  --text:#f5ede0;
+  --muted:#a08060;
+  --dim:#6b5040;
+  --orange:#f5a020;
+  --orange2:#e07030;
+  --blue:#60a5fa;
+  --yellow:#fbbf24;
+  --red:#f87171;
+  --green:#4ade80;
+  --purple:#c084fc;
+  --teal:#2dd4bf;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%;padding-top:var(--safe-top)}
+.header{background:linear-gradient(180deg,#1e0800 0%,#0f0400 100%);border-bottom:1px solid var(--border);padding:12px 16px 10px;flex-shrink:0}
+.header-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.3px}
+.header-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.header-stats{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.hstat{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 10px;text-align:center}
+.hstat-v{font-size:13px;font-weight:600;color:var(--orange)}
+.hstat-l{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.05em}
+.phase-bar{display:flex;gap:4px;padding:8px 16px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0;scrollbar-width:none}
+.phase-bar::-webkit-scrollbar{display:none}
+.ptab{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--bg3);color:var(--muted);white-space:nowrap;cursor:pointer;transition:all 0.15s}
+.ptab.active{border-color:var(--orange);color:var(--orange);background:#2a1000}
+.week-bar{display:flex;gap:5px;padding:8px 16px;background:var(--bg);overflow-x:auto;flex-shrink:0;scrollbar-width:none;border-bottom:1px solid var(--border)}
+.week-bar::-webkit-scrollbar{display:none}
+.wbtn{min-width:44px;padding:5px 6px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;text-align:center;flex-shrink:0;transition:all 0.15s}
+.wbtn.active{border-color:var(--orange2);background:#2a0e00}
+.wnum{font-size:12px;font-weight:600;color:var(--text)}
+.wmi{font-size:10px;color:var(--dim)}
+.wbtn.active .wnum{color:var(--orange)}
+.wbtn.active .wmi{color:var(--orange2)}
+.scroll-area{flex:1;overflow-y:auto;padding:10px 14px 20px;-webkit-overflow-scrolling:touch}
+.scroll-area::-webkit-scrollbar{display:none}
+.week-hdr{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.wh-phase{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--orange)}
+.wh-dates{font-size:16px;font-weight:700;color:var(--text);margin-top:2px}
+.wh-stats{display:flex;gap:14px;margin-top:8px}
+.whs{text-align:center}
+.whs-v{font-size:15px;font-weight:700;color:var(--text)}
+.whs-l{font-size:10px;color:var(--dim);text-transform:uppercase}
+.quote-banner{background:#1a1000;border:1px solid #3a2000;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;font-style:italic;color:#c08040;line-height:1.6}
+.day-card{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px;background:var(--card)}
+.day-top{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer;user-select:none}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.day-info{flex:1;min-width:0}
+.day-dow{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.06em}
+.day-name{font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.day-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0}
+.day-mi{font-size:14px;font-weight:700;color:var(--text)}
+.day-pace{font-size:11px;color:var(--muted)}
+.chevron{font-size:11px;color:var(--dim);margin-left:4px;transition:transform 0.2s}
+.chevron.open{transform:rotate(180deg)}
+.day-detail{display:none;padding:0 13px 13px;border-top:1px solid var(--border)}
+.day-detail.open{display:block}
+.dl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:10px 0 5px}
+.steps{display:flex;flex-direction:column;gap:5px}
+.step{display:flex;gap:8px;font-size:13px;line-height:1.5;color:var(--text)}
+.step-n{width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--muted);flex-shrink:0;margin-top:1px}
+.step em{color:var(--muted);font-style:normal;font-size:12px}
+.tip-box{background:var(--bg3);border-radius:7px;padding:8px 10px;font-size:12px;color:var(--text);line-height:1.6;margin-top:8px}
+.tip-box::before{content:"Coach: ";font-weight:600;color:var(--orange);font-size:11px}
+.q-box{font-size:12px;font-style:italic;color:var(--muted);border-left:2px solid var(--border2);padding-left:8px;margin-top:8px;line-height:1.6}
+.pace-guide{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
+.pg-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px}
+.pg-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pg-item{background:var(--bg3);border-radius:7px;padding:7px 9px}
+.pg-type{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:0.05em}
+.pg-pace{font-size:13px;font-weight:600;margin-top:1px}
+.progress-wrap{padding:0 16px 6px;background:var(--bg);flex-shrink:0}
+.progress-track{height:3px;background:var(--border);border-radius:2px}
+.progress-fill{height:100%;background:var(--orange);border-radius:2px;transition:width 0.3s}
+.race-card{background:linear-gradient(135deg,#2a0a00 0%,#1a0500 100%);border:1px solid #7a2000;border-radius:10px;overflow:hidden;margin-bottom:8px}
+.race-card .day-top{background:transparent}
+.bottom-safe{height:var(--safe-bot)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <div class="header-title">🏔️ St. George Marathon 2026</div>
+    <div class="header-sub">Hansons Beginner · Oct 3, 2026 · Goal: 3:50–4:10</div>
+    <div class="header-stats">
+      <div class="hstat"><div class="hstat-v">18</div><div class="hstat-l">Weeks</div></div>
+      <div class="hstat"><div class="hstat-v">Oct 3</div><div class="hstat-l">Race Day</div></div>
+      <div class="hstat"><div class="hstat-v">9:09/mi</div><div class="hstat-l">Goal Pace</div></div>
+      <div class="hstat"><div class="hstat-v">57 mi</div><div class="hstat-l">Peak Week</div></div>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-track"><div class="progress-fill" id="prog" style="width:5.5%"></div></div></div>
+  <div class="phase-bar" id="phaseTabs"></div>
+  <div class="week-bar" id="weekBtns"></div>
+  <div class="scroll-area" id="scrollArea"></div>
+</div>
+
+<script>
+const EASY="10:00–10:30/mi",MP="9:09/mi",SPD="8:00–8:15/mi",STR="8:55–9:05/mi";
+const TC={easy:"#3d82c0",long:"#1a7acc",speed:"#d08020",strength:"#c03030",tempo:"#7b3fb0",rest:"#555",race:"#d04010"};
+
+const W=[
+{w:1,ph:"BASE",dates:"Jun 1–7",mi:15,days:[
+  {d:"Mon",dt:"Jun 1",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 miles at fully conversational pace — speak in complete sentences the whole time"],tip:"Run slow to race fast. This is the foundation. No ego, no watch-chasing.",q:"The only way to finish is to start. — Goggins"},
+  {d:"Tue",dt:"Jun 2",t:"easy",n:"Easy run",mi:2,p:EASY,s:["2 easy miles — two consecutive days IS the discipline that builds champions"],tip:"Don't underestimate easy miles. Each one rewires your aerobic engine.",q:"Stay hard. Show up every day. — Goggins"},
+  {d:"Wed",dt:"Jun 3",t:"easy",n:"Easy run",mi:2,p:EASY,s:["Midweek 2 miles — keep the rhythm going"],tip:"Consistency beats intensity at this stage. Just move.",q:"Greatness is not born — it's built, day by day. — Nick Bare"},
+  {d:"Thu",dt:"Jun 4",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles — your body is quietly adapting"],tip:"Every mile is a deposit. Race day is the withdrawal.",q:"Each mile is a deposit. Race day is the withdrawal. — Hansons"},
+  {d:"Fri",dt:"Jun 5",t:"rest",n:"Rest day",mi:0,p:"—",s:["Complete rest — off your feet as much as possible"],tip:"Rest IS training. Sleep 8+ hrs. Foam roll. Hydrate.",q:"Recovery is a weapon. Use it. — Nick Bare"},
+  {d:"Sat",dt:"Jun 6",t:"easy",n:"Easy run",mi:2,p:EASY,s:["Light 2 miles before Sunday's long run — easy and effortless"],tip:"Keep Saturday short — it's setup for Sunday, not a workout.",q:"Prepare the platform. The race is Sunday. — Hansons"},
+  {d:"Sun",dt:"Jun 7",t:"long",n:"Long run",mi:3,p:EASY,s:["3 miles at easy conversational pace — first long run"],tip:"Hansons long runs simulate the LAST 16 miles of your marathon. Run easy every time.",q:"It's not the first 16 miles. It's the last 16. — Kevin Hanson"},
+]},
+{w:2,ph:"BASE",dates:"Jun 8–14",mi:19,days:[
+  {d:"Mon",dt:"Jun 8",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles — week 2, consistency over brilliance"],tip:"Each easy day builds the aerobic base that carries you through 26.2.",q:"The cave you fear to enter holds the treasure you seek. — Goggins"},
+  {d:"Tue",dt:"Jun 9",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 miles — four consecutive training days this week, this is what marathoners do"],tip:"Aerobic capacity expanding every run. Every mile counts.",q:"The body adapts to the stress it's placed under. — Hansons"},
+  {d:"Wed",dt:"Jun 10",t:"easy",n:"Easy run",mi:3,p:EASY,s:["Midweek 3 miles — relaxed breathing, relaxed stride"],tip:"If you can't hold a conversation, you're going too fast.",q:"Run slow to race fast. It sounds backward — it isn't. — Hansons"},
+  {d:"Thu",dt:"Jun 11",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles — consistency is the only cheat code in marathon training"],tip:"Stacking training days builds the endurance engine nothing else can.",q:"Discipline equals freedom. — Jocko Willink"},
+  {d:"Fri",dt:"Jun 12",t:"rest",n:"Rest day",mi:0,p:"—",s:["Full rest day"],tip:"Foam roll, stretch, eat well, sleep 8+ hrs. Recovery is a skill.",q:"You can't pour from an empty cup. Fill it back up. — Goggins"},
+  {d:"Sat",dt:"Jun 13",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles before Sunday's long run"],tip:"Stay conversational. Tomorrow is the long run — save the legs.",q:"Prepare today for what you want tomorrow. — Nick Bare"},
+  {d:"Sun",dt:"Jun 14",t:"long",n:"Long run",mi:4,p:EASY,s:["4 miles at easy conversational pace — one mile more than Week 1"],tip:"The aerobic engine grows every Sunday. The pace is the prescription.",q:"Don't stop when you're tired. Stop when you're done. — Goggins"},
+]},
+{w:3,ph:"BASE",dates:"Jun 15–21",mi:22,days:[
+  {d:"Mon",dt:"Jun 15",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles — week 3, building something real"],tip:"Your cardiovascular system is adapting. Trust the process.",q:"Every step forward matters. — Hansons"},
+  {d:"Tue",dt:"Jun 16",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — mileage ticking up, keep pace honest"],tip:"Hold back now. Your fast running is coming — earn it with easy miles first.",q:"Most people quit right before the breakthrough. — Goggins"},
+  {d:"Wed",dt:"Jun 17",t:"easy",n:"Easy run",mi:3,p:EASY,s:["Midweek 3 miles"],tip:"Midweek easy runs are recovery AND fitness. Keep pace relaxed.",q:"Embrace the grind. The process builds the champion. — Nick Bare"},
+  {d:"Thu",dt:"Jun 18",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles — they all add up to 26.2"],tip:"Every run is a brick in the wall. None are wasted.",q:"Small daily improvements lead to stunning results. — Hansons"},
+  {d:"Fri",dt:"Jun 19",t:"rest",n:"Rest day",mi:0,p:"—",s:["Rest. Big run Sunday."],tip:"Your body repairs itself when you stop. Rest before the 6-miler.",q:"Rest is not defeat. Rest is strategy. — Nick Bare"},
+  {d:"Sat",dt:"Jun 20",t:"easy",n:"Easy run",mi:3,p:EASY,s:["Easy 3 miles — pre-long run shakeout"],tip:"Never preview tomorrow's long run pace on Saturday.",q:"Steady is the path to great. — Hansons"},
+  {d:"Sun",dt:"Jun 21",t:"long",n:"Long run",mi:6,p:EASY,s:["6 miles at conversational easy pace — first real distance run"],tip:"Six miles on tired legs from a full week. That's the Hansons design — cumulative fatigue trains your marathon.",q:"Not the first 16 miles. The last 16. Own this run. — Kevin Hanson"},
+]},
+{w:4,ph:"BASE",dates:"Jun 22–28",mi:26,days:[
+  {d:"Mon",dt:"Jun 22",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — 26-mile week begins"],tip:"Weekly volume is the prescription. Every easy mile counts.",q:"Embrace the suck. Every hard day is a brick in the wall. — Nick Bare"},
+  {d:"Tue",dt:"Jun 23",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — aerobic engine being forged, mile by mile"],tip:"Run at a pace you could sustain for hours. That's easy pace.",q:"The work you do today is the result you see tomorrow. — Hansons"},
+  {d:"Wed",dt:"Jun 24",t:"easy",n:"Easy run",mi:4,p:EASY,s:["Midweek 4 miles — relaxed breathing, relaxed stride, relaxed mind"],tip:"Midweek miles are your recovery from Tuesday and prep for Thursday.",q:"Consistency is the most underrated quality in training. — Hansons"},
+  {d:"Thu",dt:"Jun 25",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — Thursday grind, done, logged, counted"],tip:"You're stacking miles daily. This trains your body to run on tired legs.",q:"You can't cheat the grind. — Nick Bare"},
+  {d:"Fri",dt:"Jun 26",t:"rest",n:"Rest day",mi:0,p:"—",s:["Full rest day"],tip:"Rest fully. At this volume, rest is doing real work.",q:"Recovery makes the training stick. — Hansons"},
+  {d:"Sat",dt:"Jun 27",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — pre-long run"],tip:"Stay light and relaxed. Long run is tomorrow.",q:"Prepare the body. Prepare the mind. — Goggins"},
+  {d:"Sun",dt:"Jun 28",t:"long",n:"Long run",mi:6,p:EASY,s:["6 miles at fully easy pace — same distance on higher volume"],tip:"Same distance, higher fatigue. Notice the difference? That IS adaptation.",q:"You grow most at the edge of your comfort zone. — Hansons"},
+]},
+{w:5,ph:"BASE",dates:"Jun 29–Jul 5",mi:29,days:[
+  {d:"Mon",dt:"Jun 29",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — final base week, you've climbed from 15 to 29 mi/wk"],tip:"When you think you've given everything, you've given about 40%.",q:"40% rule. You have more in you. — Goggins"},
+  {d:"Tue",dt:"Jun 30",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy miles — bread and butter of the base phase"],tip:"Five easy miles. These add up fast to 26.2.",q:"Your willpower is a muscle. Train it. — Nick Bare"},
+  {d:"Wed",dt:"Jul 1",t:"easy",n:"Easy run",mi:4,p:EASY,s:["Midweek 4 miles"],tip:"Mid-week recovery. Pace stays genuine — fully easy.",q:"One day at a time. One mile at a time. — Hansons"},
+  {d:"Thu",dt:"Jul 3",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 miles — final big weekday run of base phase. Speed starts NEXT WEEK."],tip:"Use these final easy days to completely lock in your easy pace.",q:"Prepare in silence. Explode in season. — Goggins"},
+  {d:"Fri",dt:"Jul 4",t:"easy",n:"Easy run (4th of July!)",mi:4,p:EASY,s:["Happy 4th! 4 easy miles — running on a holiday while others sleep in"],tip:"Running on the 4th of July is a statement. Not everyone does this. That's the point.",q:"While they sleep, we work. — Goggins"},
+  {d:"Sat",dt:"Jul 5",t:"rest",n:"Rest day",mi:0,p:"—",s:["Rest. 7-mile long run tomorrow — biggest yet"],tip:"Rest up. Hydrate. Eat well. The base phase closes tomorrow.",q:"Recharge. Reload. Tomorrow we close the base chapter. — Hansons"},
+  {d:"Sun",dt:"Jul 5",t:"long",n:"Long run — BASE COMPLETE",mi:7,p:EASY,s:["7 miles at conversational easy pace — FINAL BASE PHASE LONG RUN"],tip:"BASE PHASE COMPLETE. Speed work starts Monday. Finish with gratitude.",q:"Speed is earned. You've built the base. Now use it. — Nick Bare"},
+]},
+{w:6,ph:"SPEED",dates:"Jul 6–12",mi:31,days:[
+  {d:"Mon",dt:"Jul 6",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles — speed phase begins tomorrow, today: easy prep"],tip:"Something new is coming tomorrow. Show up easy, focused.",q:"Speed is earned. You've built the base. Now use it. — Nick Bare"},
+  {d:"Tue",dt:"Jul 7",t:"speed",n:"SPEED: 12×400m",mi:7,p:SPD,s:["Warm-up: 1.5 miles easy","12×400m (¼ mile) @ 8:00–8:15/mi — ~2:00 per rep","Recovery: 400m easy jog between EVERY rep","Cool-down: 1.5 miles easy","Total: ~7 miles including warm-up & cool-down"],tip:"Run every rep at the SAME pace. First 3 should feel easy — that's perfect. The last 3 are where fitness is built.",q:"The first few are easy. The last few are everything. — Hansons"},
+  {d:"Wed",dt:"Jul 8",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy recovery miles — SLOW DOWN after speed work"],tip:"Speed work adaptation happens DURING recovery, not the workout itself.",q:"Recovery is where the magic happens. — Hansons"},
+  {d:"Thu",dt:"Jul 9",t:"tempo",n:"TEMPO: 5 miles @ MP",mi:7,p:MP,s:["Warm-up: 1 mile easy","5 miles at EXACTLY 9:09/mi — marathon goal pace","Cool-down: 1 mile easy","Total: ~7 miles"],tip:"THIS is your marathon goal pace. Get comfortable at 9:09. Controlled, purposeful, sustainable.",q:"Get comfortable being uncomfortable at this pace. It's your race pace. — Hansons"},
+  {d:"Fri",dt:"Jul 10",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles — sandwiched between two SOS workouts, stay slow"],tip:"Most dangerous day for overtraining. Your legs feel okay — that's a trap. Stay easy.",q:"The easy days protect the hard work. — Hansons"},
+  {d:"Sat",dt:"Jul 11",t:"rest",n:"Rest day",mi:0,p:"—",s:["Rest before Sunday's 8-mile long run"],tip:"Hydrate. Eat. Sleep. Standard pre-long-run protocol.",q:"Load up. Tomorrow is 8 miles. — Hansons"},
+  {d:"Sun",dt:"Jul 12",t:"long",n:"Long run",mi:8,p:EASY,s:["8 miles at easy conversational pace"],tip:"Eight miles on tired legs from first SOS week — THIS is the Hansons magic. Embrace the heaviness.",q:"It's not tired legs. It's marathon training. — Kevin Hanson"},
+]},
+{w:7,ph:"SPEED",dates:"Jul 13–19",mi:35,days:[
+  {d:"Mon",dt:"Jul 13",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — mileage and fitness both climbing"],tip:"Your easy days are sacred. They allow your hard days to actually work.",q:"Most people quit right before the breakthrough. Be the one who doesn't. — Goggins"},
+  {d:"Tue",dt:"Jul 14",t:"speed",n:"SPEED: 8×600m",mi:7,p:SPD,s:["Warm-up: 1.5 miles easy","8×600m (0.375 mile) @ 8:00–8:15/mi — ~3:00–3:05 per rep","Recovery: 400m easy jog between every rep","Cool-down: 1.5 miles easy","Total: ~7 miles"],tip:"Longer intervals now. Run all 8 at the SAME pace. Discipline beats bravado every time.",q:"You know what's on the other side of pain? Everything you want. — Goggins"},
+  {d:"Wed",dt:"Jul 15",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy recovery miles — flush the legs after Tuesday"],tip:"Recovery run = active recovery. Move the blood without taxing the system.",q:"Slow down to speed up. — Hansons"},
+  {d:"Thu",dt:"Jul 16",t:"tempo",n:"TEMPO: 6 miles @ MP",mi:8,p:MP,s:["Warm-up: 1 mile easy","6 miles at 9:09/mi","Cool-down: 1 mile easy","Total: ~8 miles"],tip:"One more mile at race pace than last week. The adaptation is happening.",q:"The body achieves what the mind believes. — Nick Bare"},
+  {d:"Fri",dt:"Jul 17",t:"easy",n:"Easy run",mi:3,p:EASY,s:["Short easy 3 miles — recover and trust"],tip:"Short on purpose. Two hard SOS days flanking this one — stay easy.",q:"Recovery is a discipline. — Hansons"},
+  {d:"Sat",dt:"Jul 18",t:"rest",n:"Rest day",mi:0,p:"—",s:["Off. Feet up. Fuel up."],tip:"9 miles tomorrow. Carb-heavy dinner.",q:"Recharge the engine. Race fuel starts tonight. — Hansons"},
+  {d:"Sun",dt:"Jul 19",t:"long",n:"Long run",mi:9,p:EASY,s:["9 miles at easy conversational pace"],tip:"You're climbing the ladder. One mile at a time — don't look down.",q:"The only run you'll ever regret is the one you didn't take. — Hansons"},
+]},
+{w:8,ph:"SPEED",dates:"Jul 20–26",mi:37,days:[
+  {d:"Mon",dt:"Jul 20",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles to start a 37-mile week"],tip:"37 miles this week. Start controlled.",q:"The body achieves what the mind believes. Believe in a 4:00 marathon. — Nick Bare"},
+  {d:"Tue",dt:"Jul 21",t:"speed",n:"SPEED: 6×800m",mi:8,p:SPD,s:["Warm-up: 1.5 miles easy","6×800m (half mile) @ 8:00–8:15/mi — ~4:00–4:08 per rep","Recovery: 400m easy jog between every rep","Cool-down: 1.5 miles easy","Total: ~8 miles"],tip:"Half-mile repeats — the gold standard interval. Run all 6 at the IDENTICAL pace. Precision over power.",q:"Precision is power. — Hansons"},
+  {d:"Wed",dt:"Jul 22",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — flush the legs, aerobic base grows every day"],tip:"Active recovery. Move the legs, don't tax them.",q:"The easy days make the hard days possible. — Hansons"},
+  {d:"Thu",dt:"Jul 23",t:"tempo",n:"TEMPO: 7 miles @ MP",mi:9,p:MP,s:["Warm-up: 1 mile easy","7 miles at 9:09/mi — fully in marathon territory","Cool-down: 1 mile easy","Total: ~9 miles"],tip:"Seven consecutive miles at race pace. Get comfortable here.",q:"This IS your marathon. Get familiar with this pace. — Hansons"},
+  {d:"Fri",dt:"Jul 24",t:"easy",n:"Easy run",mi:3,p:EASY,s:["Easy 3-mile recovery"],tip:"Short, easy, restorative. Protect Tuesday and Thursday's work.",q:"Rest is not laziness. It's how winners are made. — Nick Bare"},
+  {d:"Sat",dt:"Jul 25",t:"rest",n:"Rest day",mi:0,p:"—",s:["Rest day — double digits tomorrow"],tip:"10 miles tomorrow — first double-digit run. Hydrate all day.",q:"Ten miles tomorrow. The first of many big milestones. — Hansons"},
+  {d:"Sun",dt:"Jul 26",t:"long",n:"Long run — 10 miles",mi:10,p:EASY,s:["10 miles at easy conversational pace — DOUBLE DIGITS"],tip:"FIRST DOUBLE-DIGIT RUN. Run every mile at easy pace — fitness building, not proving.",q:"Ten miles. Own it. This is where marathoners are made. — Hansons"},
+]},
+{w:9,ph:"SPEED",dates:"Jul 27–Aug 2",mi:40,days:[
+  {d:"Mon",dt:"Jul 27",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — 40-mile week, you are now a high-volume runner"],tip:"40 miles per week. Six months ago this might have seemed impossible. Today it's just Monday.",q:"Don't stop when you're tired. Stop when you're done. — Goggins"},
+  {d:"Tue",dt:"Jul 28",t:"speed",n:"SPEED: 5×1,000m",mi:8,p:SPD,s:["Warm-up: 1.5 miles easy","5×1000m (0.62 mile) @ 8:00–8:15/mi — ~4:58–5:06 per rep","Recovery: 400m easy jog between every rep","Cool-down: 1.5 miles easy","Total: ~8 miles"],tip:"Kilometer repeats — getting longer every week. Mental toughness is built here as much as fitness.",q:"Mental toughness is built one rep at a time. — Goggins"},
+  {d:"Wed",dt:"Jul 29",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy recovery miles — genuinely slow"],tip:"Active recovery. This is mandatory, not optional.",q:"The process is the goal. — Hansons"},
+  {d:"Thu",dt:"Jul 30",t:"tempo",n:"TEMPO: 8 miles @ MP",mi:10,p:MP,s:["Warm-up: 1 mile easy","8 miles at 9:09/mi","Cool-down: 1 mile easy","Total: ~10 miles"],tip:"Eight miles at race pace — you're TOUCHING the marathon in training now.",q:"Eight miles at race pace. The race is in you now. — Hansons"},
+  {d:"Fri",dt:"Jul 31",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — nearly halfway through the plan"],tip:"Don't let up at the halfway point. This is where most runners fade. Not you.",q:"Halfway there. Keep the same energy. — Goggins"},
+  {d:"Sat",dt:"Aug 1",t:"rest",n:"Rest day",mi:0,p:"—",s:["Rest before the 10-mile long run"],tip:"Good nutrition. Good sleep. Ready for Sunday.",q:"Fill the tank. You'll need it tomorrow. — Hansons"},
+  {d:"Sun",dt:"Aug 2",t:"long",n:"Long run",mi:10,p:EASY,s:["10 miles at fully easy pace — same distance on higher total fatigue"],tip:"Same distance, higher fatigue. Feel heavier than last week? Good. That's cumulative fatigue working.",q:"The legs feel the miles. That's the point. — Kevin Hanson"},
+]},
+{w:10,ph:"SPEED",dates:"Aug 3–9",mi:43,days:[
+  {d:"Mon",dt:"Aug 3",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — last speed week, final speed workout Tuesday"],tip:"Savor the final speed week. Strength phase demands everything.",q:"You can't cheat the grind. It knows how much you've put in. — Nick Bare"},
+  {d:"Tue",dt:"Aug 4",t:"speed",n:"SPEED: 4×1,200m",mi:8,p:SPD,s:["Warm-up: 1.5 miles easy","4×1200m (¾ mile) @ 8:00–8:15/mi — ~6:00–6:11 per rep","Recovery: 400m easy jog between every rep","Cool-down: 1.5 miles easy","Total: ~8 miles — FINAL SPEED WORKOUT"],tip:"FINAL SPEED WORKOUT. Make every rep count. Smooth, strong, precise. Close this chapter right.",q:"Finish what you started. Every rep. — Goggins"},
+  {d:"Wed",dt:"Aug 5",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy miles — mileage climbing, protect easy days more than ever"],tip:"43-mile week. Easy miles are carrying more weight now. Keep them honest.",q:"Volume is your foundation. Protect it. — Hansons"},
+  {d:"Thu",dt:"Aug 6",t:"tempo",n:"TEMPO: 9 miles @ MP",mi:11,p:MP,s:["Warm-up: 1 mile easy","9 miles at 9:09/mi","Cool-down: 1 mile easy","Total: ~11 miles"],tip:"Nine miles at race pace. Lock in at exactly 9:09 — precision is your superpower.",q:"Precision at race pace builds race-day confidence. — Hansons"},
+  {d:"Fri",dt:"Aug 7",t:"easy",n:"Easy run",mi:3,p:EASY,s:["Short easy recovery — deep in the grind"],tip:"3 miles — short on purpose after a big Thursday.",q:"Short today. Strong tomorrow. — Hansons"},
+  {d:"Sat",dt:"Aug 8",t:"rest",n:"Rest day",mi:0,p:"—",s:["Rest before 12 miles — biggest long run yet"],tip:"Biggest long run yet tomorrow. Carb up. Hydrate. Sleep early.",q:"12 miles tomorrow. You are ready. — Hansons"},
+  {d:"Sun",dt:"Aug 9",t:"long",n:"Long run — 12 miles",mi:12,p:EASY,s:["12 miles at conversational easy pace"],tip:"Twelve miles — officially in real marathon territory. Every easy mile builds your race engine.",q:"Twelve miles. Not many people do this on a Sunday. You are not many people. — Goggins"},
+]},
+{w:11,ph:"STRENGTH",dates:"Aug 10–16",mi:45,days:[
+  {d:"Mon",dt:"Aug 10",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — STRENGTH PHASE begins tomorrow, most important block"],tip:"You've built the engine — now you tune it for 26.2.",q:"Callous your mind. The most powerful muscle is between your ears. — Goggins"},
+  {d:"Tue",dt:"Aug 11",t:"strength",n:"STRENGTH: 6×1 mile",mi:9,p:STR,s:["Warm-up: 1.5 miles easy","6×1 mile @ 8:55–9:05/mi — marathon pace minus 10 sec","Recovery: 400m easy jog between every rep (~2:30)","Cool-down: 1.5 miles easy","Total: ~9 miles"],tip:"Strength pace = MP minus 10 seconds. These reps are HARD. Run every rep at exactly the prescribed pace — no faster.",q:"These reps make you a fundamentally different runner. — Hansons"},
+  {d:"Wed",dt:"Aug 12",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy recovery miles — strength work taxes MORE than speed, be more easy than ever"],tip:"Strength workouts create more systemic fatigue than speed. Wednesday easy is critical.",q:"The rest is part of the training. — Hansons"},
+  {d:"Thu",dt:"Aug 13",t:"tempo",n:"TEMPO: 9 miles @ MP",mi:11,p:MP,s:["Warm-up: 1 mile easy","9 miles at 9:09/mi","Cool-down: 1 mile easy","Total: ~11 miles"],tip:"Nine miles at race pace after a hard strength week. You are becoming a marathoner.",q:"You ARE a marathoner. Own this workout. — Hansons"},
+  {d:"Fri",dt:"Aug 14",t:"rest",n:"Rest day",mi:0,p:"—",s:["Full rest — at higher mileage, recovery becomes MORE critical"],tip:"45-mile week. Rest FULLY today.",q:"At high mileage, rest is your biggest training tool. — Hansons"},
+  {d:"Sat",dt:"Aug 15",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — pre-long run, light and relaxed"],tip:"Easy and effortless. 13 miles tomorrow — half marathon distance.",q:"Tomorrow is a milestone. Save it for tomorrow. — Hansons"},
+  {d:"Sun",dt:"Aug 16",t:"long",n:"Long run — 13 miles",mi:13,p:EASY,s:["13 miles at easy conversational pace — HALF MARATHON DISTANCE"],tip:"Half marathon distance on tired legs from a full strength week. This is where your marathon is built.",q:"13 miles. Half the race. All the purpose. — Hansons"},
+]},
+{w:12,ph:"STRENGTH",dates:"Aug 17–23",mi:48,days:[
+  {d:"Mon",dt:"Aug 17",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — 48-mile week, serious mileage"],tip:"Comfort is the enemy of progress. You are not comfortable this week. Correct.",q:"Comfort is the enemy of progress. Get uncomfortable. Grow. — Nick Bare"},
+  {d:"Tue",dt:"Aug 18",t:"strength",n:"STRENGTH: 3×2 miles",mi:9,p:STR,s:["Warm-up: 1.5 miles easy","3×2 miles @ 8:55–9:05/mi — ~17:50–18:10 per rep","Recovery: 400m easy jog between reps","Cool-down: 1.5 miles easy","Total: ~9 miles"],tip:"Two-mile strength repeats. Stay controlled. This workout makes you fundamentally different.",q:"The distance gets longer. The mindset gets stronger. — Hansons"},
+  {d:"Wed",dt:"Aug 19",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy miles — aerobic base is vast now, let it work"],tip:"Easy running at this fitness level feels different — more effortless than June. That's adaptation.",q:"Feel the fitness. It's real. — Hansons"},
+  {d:"Thu",dt:"Aug 20",t:"tempo",n:"TEMPO: 10 miles @ MP",mi:12,p:MP,s:["Warm-up: 1 mile easy","10 miles at 9:09/mi — PEAK TEMPO DISTANCE","Cool-down: 1 mile easy","Total: ~12 miles"],tip:"TEN MILES AT MARATHON PACE. This workout IS the race in training form. Lock in at 9:09/mi — not even at mile 8.",q:"Ten miles at race pace. The race is no longer abstract. — Hansons"},
+  {d:"Fri",dt:"Aug 21",t:"easy",n:"Easy run",mi:4,p:EASY,s:["Easy 4-mile recovery — you ran 10 miles at race pace, honor that"],tip:"You earned this easy day. Truly slow — body is repairing.",q:"Recovery after a peak workout is sacred. — Hansons"},
+  {d:"Sat",dt:"Aug 22",t:"rest",n:"Rest day",mi:0,p:"—",s:["Rest before 14 miles"],tip:"Fourteen miles tomorrow. Carb-heavy dinner. Early sleep.",q:"Tomorrow is 14 miles. The hay is going in the barn. — Hansons"},
+  {d:"Sun",dt:"Aug 23",t:"long",n:"Long run — 14 miles",mi:14,p:EASY,s:["14 miles at easy conversational pace"],tip:"Fourteen miles. You're in rare air. Run controlled, proud, easy.",q:"Fourteen miles. You're in rare air. Own it. — Goggins"},
+]},
+{w:13,ph:"STRENGTH",dates:"Aug 24–30",mi:51,days:[
+  {d:"Mon",dt:"Aug 24",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy miles — 51-mile week, you ARE an athlete"],tip:"51 miles this week. Protect every easy day.",q:"When it gets hard — GET HARDER. That's the only move. — Goggins"},
+  {d:"Tue",dt:"Aug 25",t:"strength",n:"STRENGTH: 2×3 miles",mi:9,p:STR,s:["Warm-up: 1.5 miles easy","2×3 miles @ 8:55–9:05/mi — ~26:45–27:15 per rep","Recovery: 400m easy jog between reps","Cool-down: 1.5 miles easy","Total: ~9 miles — HARDEST WORKOUT OF THE PLAN"],tip:"THREE-MILE strength reps — the hardest single workout of the entire plan. Stay at pace no matter how hard it gets in the final mile of each rep.",q:"The hardest workout of the plan. Rise to meet it. — Hansons"},
+  {d:"Wed",dt:"Aug 26",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy recovery miles — slow and easy, you earned this pace"],tip:"After 2×3-mile strength reps, genuine recovery is mandatory.",q:"Honor the process. Easy today, strong Thursday. — Hansons"},
+  {d:"Thu",dt:"Aug 27",t:"tempo",n:"TEMPO: 10 miles @ MP",mi:12,p:MP,s:["Warm-up: 1 mile easy","10 miles at 9:09/mi","Cool-down: 1 mile easy","Total: ~12 miles"],tip:"Same peak tempo on more total volume. Miles 7-8-9 will be hard. That feeling IS the training working.",q:"This is the hardest version of yourself you've ever been. Act like it. — Goggins"},
+  {d:"Fri",dt:"Aug 28",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy miles — 15-mile long run Sunday, keep Friday easy"],tip:"Do NOT preview Sunday's pace today. 100% easy.",q:"Protect the long run. — Hansons"},
+  {d:"Sat",dt:"Aug 29",t:"rest",n:"Rest day",mi:0,p:"—",s:["REST. Mandatory. Hydrate aggressively."],tip:"15 miles tomorrow. Biggest long run yet. Carb load. 8+ hrs sleep.",q:"Fuel up. The 15-miler awaits. — Hansons"},
+  {d:"Sun",dt:"Aug 30",t:"long",n:"Long run — 15 miles",mi:15,p:EASY,s:["15 miles at easy conversational pace"],tip:"Fifteen miles. One away from the Hansons maximum. Stay loose, stay easy, finish with something left.",q:"Fifteen miles. This is what most runners never do. — Hansons"},
+]},
+{w:14,ph:"STRENGTH",dates:"Aug 31–Sep 6",mi:53,days:[
+  {d:"Mon",dt:"Aug 31",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy miles — September! Race day is 33 days away. Lock in."],tip:"You must embrace the suffering — it's the doorway to your best self.",q:"September. The month it all comes together. — Hansons"},
+  {d:"Tue",dt:"Sep 1",t:"strength",n:"STRENGTH: 3×2 miles",mi:9,p:STR,s:["Warm-up: 1.5 miles easy","3×2 miles @ 8:55–9:05/mi","Recovery: 400m easy jog between reps","Cool-down: 1.5 miles easy","Total: ~9 miles"],tip:"You've done this workout before. Execute it perfectly. No extra credit for going faster.",q:"You've done this. Trust your training. — Hansons"},
+  {d:"Wed",dt:"Sep 2",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy midweek miles — 16-mile long run coming Sunday"],tip:"Midweek recovery with a massive long run on the horizon.",q:"Easy today. Epic Sunday. — Hansons"},
+  {d:"Thu",dt:"Sep 3",t:"tempo",n:"TEMPO: 10 miles @ MP",mi:12,p:MP,s:["Warm-up: 1 mile easy","10 miles at 9:09/mi","Cool-down: 1 mile easy","Total: ~12 miles"],tip:"If 9:09 feels controlled today — you are ready for race day. That IS real fitness.",q:"If 9:09 feels controlled, you are ready. — Hansons"},
+  {d:"Fri",dt:"Sep 4",t:"easy",n:"Easy run",mi:6,p:EASY,s:["6 easy miles — volume at its peak"],tip:"Six easy miles the day before rest. Highest Friday mileage of the plan — stay conversational.",q:"Volume peak. Stay disciplined. — Hansons"},
+  {d:"Sat",dt:"Sep 5",t:"rest",n:"Rest day",mi:0,p:"—",s:["REST. Completely off feet. 16 MILES TOMORROW."],tip:"16 miles tomorrow — Hansons maximum long run. Best carb dinner of training. 9pm bedtime.",q:"Tomorrow is the crown jewel of your training. Prepare for it. — Hansons"},
+  {d:"Sun",dt:"Sep 6",t:"long",n:"Long run — 16 MILES",mi:16,p:EASY,s:["16 miles at easy conversational pace — THE HANSONS MAXIMUM"],tip:"SIXTEEN MILES. This simulates the LAST 16 miles of your marathon. The crown jewel of the plan. Run conversational. Run proud.",q:"Not the first 16 miles. The last 16. And you just ran them. — Kevin Hanson"},
+]},
+{w:15,ph:"STRENGTH",dates:"Sep 7–13",mi:55,days:[
+  {d:"Mon",dt:"Sep 7",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy miles — PEAK WEEK (55 miles), every run matters"],tip:"The hay is almost in the barn. Stack every last bale.",q:"Peak week. You've earned this. Execute it. — Hansons"},
+  {d:"Tue",dt:"Sep 8",t:"strength",n:"STRENGTH: 2×3 miles",mi:9,p:STR,s:["Warm-up: 1.5 miles easy","2×3 miles @ 8:55–9:05/mi","Recovery: 400m easy jog between reps","Cool-down: 1.5 miles easy","Total: ~9 miles"],tip:"Peak week strength. Fitness at its highest. Execute with precision.",q:"Trust what you've built. Execute. — Hansons"},
+  {d:"Wed",dt:"Sep 9",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy recovery miles — feel the fitness under the fatigue"],tip:"At peak week, easy running is more important than ever.",q:"The fitness is real. The fatigue is real. Both are correct. — Hansons"},
+  {d:"Thu",dt:"Sep 10",t:"tempo",n:"TEMPO: 10 miles @ MP",mi:12,p:MP,s:["Warm-up: 1 mile easy","10 miles at 9:09/mi","Cool-down: 1 mile easy","Total: ~12 miles"],tip:"Peak fitness + peak volume. This might be your best tempo run ever.",q:"You have never been this fit in your life. Run like it. — Hansons"},
+  {d:"Fri",dt:"Sep 11",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy miles"],tip:"Easy does it. One more day before the 16-miler.",q:"Stay easy. Save it for Sunday. — Hansons"},
+  {d:"Sat",dt:"Sep 12",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3-mile easy shakeout — light and brief"],tip:"Short and easy. 16 miles tomorrow. This is just movement, not training.",q:"Save your legs. Tomorrow earns the respect. — Hansons"},
+  {d:"Sun",dt:"Sep 13",t:"long",n:"Long run — 16 miles",mi:16,p:EASY,s:["16 miles at easy conversational pace — SECOND 16-MILER"],tip:"Back-to-back peak weeks with two 16-milers. You have never been this fit in your life.",q:"Two 16-milers. The foundation of a great marathon. — Kevin Hanson"},
+]},
+{w:16,ph:"STRENGTH",dates:"Sep 14–20",mi:57,days:[
+  {d:"Mon",dt:"Sep 14",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy miles — 57-MILE PEAK WEEK, highest mileage of the plan"],tip:"You've done the work. All of it. Now finish what you started.",q:"57 miles this week. Show up for every single one. — Hansons"},
+  {d:"Tue",dt:"Sep 15",t:"strength",n:"STRENGTH: 3×2 miles",mi:9,p:STR,s:["Warm-up: 1.5 miles easy","3×2 miles @ 8:55–9:05/mi","Recovery: 400m easy jog between reps","Cool-down: 1.5 miles easy","Total: ~9 miles"],tip:"One of your FINAL SOS workouts of the entire plan. Leave nothing behind.",q:"One of your last hard workouts. Make it count. — Hansons"},
+  {d:"Wed",dt:"Sep 16",t:"easy",n:"Easy run",mi:6,p:EASY,s:["6 easy miles — deep fatigue is normal at peak week"],tip:"Peak week fatigue is real. The taper is coming. Your fitness is at its peak.",q:"Fatigue is not failure. It's peak fitness. — Hansons"},
+  {d:"Thu",dt:"Sep 17",t:"tempo",n:"TEMPO: 10 miles @ MP",mi:12,p:MP,s:["Warm-up: 1 mile easy","10 miles at 9:09/mi — near-final major tempo run","Cool-down: 1 mile easy","Total: ~12 miles"],tip:"Near-final tempo. If 9:09 feels comfortable and controlled — you are READY.",q:"If this feels controlled — you are ready for October 3rd. — Hansons"},
+  {d:"Fri",dt:"Sep 18",t:"easy",n:"Easy run",mi:5,p:EASY,s:["5 easy miles — almost at the finish line of this build"],tip:"Almost there. Two more big days and the taper begins.",q:"The end of the build is in sight. Finish strong. — Hansons"},
+  {d:"Sat",dt:"Sep 19",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles before the FINAL PEAK LONG RUN"],tip:"Light and easy. Final 16-miler tomorrow.",q:"One more big one. Then the taper. You've earned both. — Hansons"},
+  {d:"Sun",dt:"Sep 20",t:"long",n:"Long run — FINAL PEAK 16mi",mi:16,p:EASY,s:["16 miles at easy conversational pace — FINAL PEAK LONG RUN of the training block"],tip:"FINAL PEAK LONG RUN. After this, the taper begins. Run this with GRATITUDE. 16 weeks in your legs.",q:"The last long one. After this — you taper. You've built something extraordinary. — Hansons"},
+]},
+{w:17,ph:"TAPER",dates:"Sep 21–27",mi:40,days:[
+  {d:"Mon",dt:"Sep 21",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — TAPER HAS BEGUN, volume drops ~30%"],tip:"Taper is loading the gun. Race day, you pull the trigger. DO NOT add miles.",q:"Taper is loading the gun. Race day you pull the trigger. — Nick Bare"},
+  {d:"Tue",dt:"Sep 22",t:"strength",n:"STRENGTH: 2×2 miles (taper)",mi:7,p:STR,s:["Warm-up: 1 mile easy","2×2 miles @ 8:55–9:05/mi — reduced taper volume","Recovery: 400m easy jog between reps","Cool-down: 1 mile easy","Total: ~7 miles — LAST STRENGTH WORKOUT"],tip:"LAST STRENGTH WORKOUT — 11 days before the race. Fire the muscles one final time. After this, no more hard efforts.",q:"Final strength workout. Close this chapter strong. — Hansons"},
+  {d:"Wed",dt:"Sep 23",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — notice the freshness returning? That's the taper working."],tip:"Legs feeling lighter? That's 16 weeks of fitness emerging as fatigue fades.",q:"Feel that? That's fitness meeting fresh legs. — Hansons"},
+  {d:"Thu",dt:"Sep 24",t:"tempo",n:"TEMPO: 8 miles @ MP",mi:10,p:MP,s:["Warm-up: 1 mile easy","8 miles at 9:09/mi — FINAL TEMPO RUN, 9 days before race","Cool-down: 1 mile easy","Total: ~10 miles"],tip:"FINAL TEMPO RUN. Run smooth, confident. After this, only easy running until the start line.",q:"Final tempo. Run it like a victory lap of your training. — Hansons"},
+  {d:"Fri",dt:"Sep 25",t:"easy",n:"Easy run",mi:4,p:EASY,s:["4 easy miles — race day is 8 days away"],tip:"Work is done. Legs getting lighter every day. Trust the taper.",q:"Eight days out. The work is done. Trust it. — Hansons"},
+  {d:"Sat",dt:"Sep 26",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles — visualize the course: starts at 5,240ft, descends 2,600ft to St. George"],tip:"Pine Valley Mountains start → Snow Canyon descent → finish at Vernon Worthen Park. See it.",q:"See the race before you run it. — Nick Bare"},
+  {d:"Sun",dt:"Sep 27",t:"easy",n:"Final training long run",mi:8,p:EASY,s:["8 easy miles — the final Sunday run of your training block"],tip:"Take it all in. 17 weeks of work in your legs. Race week starts tomorrow.",q:"This is the last one before race week. Carry it with you. — Hansons"},
+]},
+{w:18,ph:"RACE WEEK",dates:"Sep 28–Oct 4",mi:26.2,days:[
+  {d:"Mon",dt:"Sep 28",t:"easy",n:"Easy run",mi:3,p:EASY,s:["3 easy miles — race week, DO NOT add miles no matter how fresh you feel"],tip:"Taper anxiety is real. Resist every urge to run more. Trust 18 weeks of work.",q:"The work is done. Now stay out of your own way. — Goggins"},
+  {d:"Tue",dt:"Sep 29",t:"easy",n:"Easy run",mi:2,p:EASY,s:["2 easy miles — visualize: mi 1–6 at 9:20–9:30, mi 7–20 at 9:09, mi 21–26.2 everything left"],tip:"Mental rehearsal is training. Run the race in your mind during these 2 miles.",q:"See it. Believe it. Run it. — Goggins"},
+  {d:"Wed",dt:"Sep 30",t:"easy",n:"Easy run + carb load",mi:2,p:EASY,s:["2 easy miles","BEGIN CARB-LOADING: rice, pasta, bread, potatoes at every meal","Extra water all day — no alcohol, no new foods"],tip:"Carb load starts now. Fuel the glycogen stores that will carry you 26.2 miles.",q:"Fuel the machine. Three days out. — Nick Bare"},
+  {d:"Thu",dt:"Oct 1",t:"easy",n:"Easy run + strides",mi:2,p:EASY,s:["2 easy miles","4×20-second strides at race pace (9:09/mi) at the end","Then DONE — rest the remainder of the day"],tip:"Strides activate fast-twitch fibers without taxing recovery. Brief, sharp, done.",q:"Wake the legs. Then rest. Two days out. — Hansons"},
+  {d:"Fri",dt:"Oct 2",t:"rest",n:"EXPO + Race Prep",mi:0,p:"—",s:["EXPO: Dixie Convention Center, 1835 S Convention Center Dr — 10AM–8PM","Pick up your bib and timing chip","Lay out EVERY piece of race gear tonight","Buses load 3:45–5:15 AM from Vernon Worthen Park, 250 S 400 E","Big carb dinner — in bed by 9:00 PM","Set TWO alarms"],tip:"Everything for tomorrow is decided TODAY. Set alarms, lay out gear, know your bus time.",q:"Prepare tonight like your race depends on it. It does. — Goggins"},
+  {d:"Sat",dt:"Oct 3",t:"race",n:"ST. GEORGE MARATHON",mi:26.2,p:MP,s:["Miles 1–6: Hold back — run 9:20–9:30/mi, the downhill will tempt you. RESIST IT.","Miles 7–20: Lock into 9:09/mi. Controlled, steady, purposeful.","Miles 21–23: Draw on everything you've built. Training pays off here.","Miles 24–26.2: Leave NOTHING on course. Everything in the tank — spend it ALL.","FINISH at Vernon Worthen Park. YOU ARE A MARATHONER."],tip:"The downhill from Snow Canyon is DECEPTIVE. Run conservatively miles 1–6 or you WILL blow up at mile 20. Every easy run and every SOS workout lives in your legs right now.",q:"18 weeks. Every early morning. Every hard workout. GO COLLECT IT. — Goggins"},
+  {d:"Sun",dt:"Oct 4",t:"rest",n:"Rest & celebrate",mi:0,p:"—",s:["YOU ARE A MARATHONER. Full rest today.","Ice the legs if needed.","Eat everything in sight.","Celebrate with everyone who supported this journey."],tip:"You earned every single step. The finish line is not the end — it's the beginning.",q:"You did what most people only dream about. Wear that forever. — Goggins"},
+]},
+];
+
+const PHASES=["BASE","SPEED","STRENGTH","TAPER","RACE WEEK"];
+let curW=1;
+const WDAY=new Date('2026-10-03');
+
+function daysUntilRace(){
+  const now=new Date();now.setHours(0,0,0,0);
+  const d=Math.ceil((WDAY-now)/(1000*60*60*24));
+  return d>0?d:0;
+}
+
+function colorFor(t){return TC[t]||"#888"}
+
+function buildPhaseTabs(){
+  const el=document.getElementById("phaseTabs");
+  el.innerHTML="";
+  const curPhase=W[curW-1].ph;
+  PHASES.forEach(p=>{
+    const b=document.createElement("button");
+    b.className="ptab"+(p===curPhase?" active":"");
+    b.textContent=p;
+    b.onclick=()=>{
+      const fw=W.find(w=>w.ph===p);
+      if(fw){curW=fw.w;render();}
+    };
+    el.appendChild(b);
+  });
+}
+
+function buildWeekBtns(){
+  const el=document.getElementById("weekBtns");
+  el.innerHTML="";
+  W.forEach(wk=>{
+    const b=document.createElement("button");
+    b.className="wbtn"+(wk.w===curW?" active":"");
+    b.innerHTML=`<div class="wnum">W${wk.w}</div><div class="wmi">${wk.mi}mi</div>`;
+    b.onclick=()=>{curW=wk.w;render();};
+    el.appendChild(b);
+  });
+  // scroll active into view
+  setTimeout(()=>{
+    const active=el.querySelector(".active");
+    if(active)active.scrollIntoView({inline:"center",behavior:"smooth"});
+  },50);
+}
+
+function buildContent(){
+  const wk=W[curW-1];
+  const sa=document.getElementById("scrollArea");
+  sa.scrollTop=0;
+  const totalMi=wk.days.reduce((a,d)=>a+d.mi,0);
+  const sos=wk.days.filter(d=>["speed","strength","tempo"].includes(d.t)).length;
+  const pc=Math.round((curW/18)*100);
+  document.getElementById("prog").style.width=pc+"%";
+
+  let html=`
+    <div class="pace-guide">
+      <div class="pg-title">Your training paces</div>
+      <div class="pg-grid">
+        <div class="pg-item"><div class="pg-type">Easy / Long</div><div class="pg-pace" style="color:var(--blue)">${EASY}</div></div>
+        <div class="pg-item"><div class="pg-type">Marathon pace</div><div class="pg-pace" style="color:var(--purple)">${MP}</div></div>
+        <div class="pg-item"><div class="pg-type">Speed (5K)</div><div class="pg-pace" style="color:var(--yellow)">${SPD}</div></div>
+        <div class="pg-item"><div class="pg-type">Strength (MP-10)</div><div class="pg-pace" style="color:var(--red)">${STR}</div></div>
+      </div>
+    </div>
+    <div class="week-hdr">
+      <div class="wh-phase">${wk.ph} PHASE — WEEK ${wk.w} OF 18</div>
+      <div class="wh-dates">${wk.dates}</div>
+      <div class="wh-stats">
+        <div class="whs"><div class="whs-v">${totalMi>0?totalMi+" mi":"Race"}</div><div class="whs-l">Total</div></div>
+        <div class="whs"><div class="whs-v">${sos}</div><div class="whs-l">SOS</div></div>
+        <div class="whs"><div class="whs-v">${pc}%</div><div class="whs-l">Done</div></div>
+        <div class="whs"><div class="whs-v">${daysUntilRace()}</div><div class="whs-l">Days out</div></div>
+      </div>
+    </div>`;
+
+  wk.days.forEach((day,i)=>{
+    const id=`day-${curW}-${i}`;
+    const c=colorFor(day.t);
+    const isRace=day.t==="race";
+    const stepsHtml=day.s.map((s,j)=>`
+      <div class="step">
+        ${day.s.length>1?`<div class="step-n">${j+1}</div>`:""}
+        <div>${s}</div>
+      </div>`).join("");
+
+    html+=`
+      <div class="day-card${isRace?" race-card":""}">
+        <div class="day-top" onclick="toggleDay('${id}')">
+          <div class="dot" style="background:${c}"></div>
+          <div class="day-info">
+            <div class="day-dow">${day.d} · ${day.dt}</div>
+            <div class="day-name">${day.n}</div>
+          </div>
+          <div class="day-right">
+            <div class="day-mi">${day.mi>0?day.mi+(day.t==="race"?".2 mi":" mi"):"—"}</div>
+            <div class="day-pace">${day.p}</div>
+          </div>
+          <div class="chevron" id="chev-${id}">▼</div>
+        </div>
+        <div class="day-detail" id="${id}">
+          <div class="dl">Workout</div>
+          <div class="steps">${stepsHtml}</div>
+          ${day.tip?`<div class="tip-box">${day.tip}</div>`:""}
+          ${day.q?`<div class="q-box">${day.q}</div>`:""}
+        </div>
+      </div>`;
+  });
+
+  html+=`<div class="bottom-safe"></div>`;
+  sa.innerHTML=html;
+}
+
+window.toggleDay=function(id){
+  const el=document.getElementById(id);
+  const ch=document.getElementById("chev-"+id);
+  el.classList.toggle("open");
+  ch.textContent=el.classList.contains("open")?"▲":"▼";
+};
+
+function render(){
+  buildPhaseTabs();
+  buildWeekBtns();
+  buildContent();
+}
+
+// Auto-jump to current week based on today's date
+function getCurrentWeek(){
+  const starts=[
+    new Date('2026-06-01'),new Date('2026-06-08'),new Date('2026-06-15'),new Date('2026-06-22'),
+    new Date('2026-06-29'),new Date('2026-07-06'),new Date('2026-07-13'),new Date('2026-07-20'),
+    new Date('2026-07-27'),new Date('2026-08-03'),new Date('2026-08-10'),new Date('2026-08-17'),
+    new Date('2026-08-24'),new Date('2026-08-31'),new Date('2026-09-07'),new Date('2026-09-14'),
+    new Date('2026-09-21'),new Date('2026-09-28')
+  ];
+  const now=new Date();now.setHours(0,0,0,0);
+  for(let i=starts.length-1;i>=0;i--){
+    if(now>=starts[i])return i+1;
+  }
+  return 1;
+}
+
+curW=Math.min(getCurrentWeek(),18);
+render();
+</script>
+</body>
+</html>
